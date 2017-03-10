@@ -26,6 +26,8 @@ FLOAT_VEC = str_or_bytes('FV ')
 FLOAT_MAT = str_or_bytes('FM ')
 DOUBLE_VEC = str_or_bytes('DV ')
 DOUBLE_MAT = str_or_bytes('DM ')
+OPEN_ASCII = str_or_bytes('[')
+CLOSE_ASCII = str_or_bytes(']')
 
 #################################################
 # Adding kaldi tools to shell path,
@@ -135,7 +137,7 @@ def read_vec_int(file_or_fd):
     else:  # ascii
         arr = (binary + fd.readline()).strip().split()
         try:
-            arr.remove('['); arr.remove(']')  # optionally
+            arr.remove(OPEN_ASCII); arr.remove(CLOSE_ASCII)  # optionally
         except ValueError:
             pass
         ans = np.array(arr, dtype=int)
@@ -222,7 +224,7 @@ def read_vec_flt(file_or_fd):
     else: # ascii,
         arr = (binary + fd.readline()).strip().split()
         try:
-            arr.remove('['); arr.remove(']')  # optionally
+            arr.remove(OPEN_ASCII); arr.remove(CLOSE_ASCII)  # optionally
         except ValueError:
             pass
         ans = np.array(arr, dtype=float)
@@ -283,8 +285,8 @@ def read_mat_scp(file_or_fd):
     fd = open_or_fd(file_or_fd)
     try:
         for line in fd:
-            (key,rxfile) = line.split(IS_SPACE)
-            mat = read_mat(rxfile)
+            (key, rxfile) = line.split(IS_SPACE)
+            mat = read_mat(str_or_bytes(rxfile))
             yield str_or_bytes(key), mat
     finally:
         if fd is not file_or_fd: fd.close()
@@ -358,10 +360,10 @@ def _read_mat_ascii(fd):
         if (len(line) == 0): raise BadInputFormat  # eof, should not happen!
         if len(line.strip()) == 0: continue  # skip empty line
         arr = line.strip().split()
-        if arr[-1] != ']':
-            rows.append(np.array(arr,dtype='float32'))  # not last line
+        if arr[-1] != CLOSE_ASCII:
+            rows.append(np.array(arr, dtype='float32'))  # not last line
         else:
-            rows.append(np.array(arr[:-1],dtype='float32'))  # last line
+            rows.append(np.array(arr[:-1], dtype='float32'))  # last line
             mat = np.vstack(rows)
             return mat
 
