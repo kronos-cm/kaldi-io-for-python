@@ -18,7 +18,7 @@ else:
 
 #################################################
 
-IS_BIN = str_or_bytes('\x0b')
+IS_BIN = str_or_bytes('\x00B')
 IS_EOL = str_or_bytes('\x04')
 IS_SPACE = str_or_bytes(' ')
 IS_EMPTY = str_or_bytes('')
@@ -394,9 +394,9 @@ def write_mat(file_or_fd, m, key=IS_EMPTY):
         else: raise MatrixDataTypeError
         # Dims,
         fd.write(IS_EOL)
-        fd.write(struct.pack('I',m.shape[0]))  # rows
+        fd.write(struct.pack('I', m.shape[0]))  # rows
         fd.write(IS_EOL)
-        fd.write(struct.pack('I',m.shape[1]))  # cols
+        fd.write(struct.pack('I', m.shape[1]))  # cols
         # Data,
         m.tofile(fd, sep="")  # binary
     finally:
