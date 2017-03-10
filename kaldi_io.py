@@ -88,7 +88,7 @@ def read_key(fd):
     key = key.strip()
     if key == IS_EMPTY: return None  # end of file,
     assert(re.match(str_or_bytes('^[\.a-zA-Z0-9_-]+$'), key) is not None), "Non-valid key format"
-    return str_or_bytes(key)
+    return key
 
 
 #################################################
@@ -112,7 +112,7 @@ def read_vec_int_ark(file_or_fd):
         key = read_key(fd)
         while key:
             ali = read_vec_int(fd)
-            yield key, ali
+            yield str_or_bytes(key), ali
             key = read_key(fd)
     finally:
         if fd is not file_or_fd: fd.close()
@@ -191,7 +191,7 @@ def read_vec_flt_ark(file_or_fd):
         key = read_key(fd)
         while key:
             ali = read_vec_flt(fd)
-            yield key, ali
+            yield str_or_bytes(key), ali
             key = read_key(fd)
     finally:
         if fd is not file_or_fd: fd.close()
@@ -283,7 +283,7 @@ def read_mat_scp(file_or_fd):
         for line in fd:
             (key,rxfile) = line.split(IS_SPACE)
             mat = read_mat(rxfile)
-            yield key, mat
+            yield str_or_bytes(key), mat
     finally:
         if fd is not file_or_fd: fd.close()
 
@@ -305,7 +305,7 @@ def read_mat_ark(file_or_fd):
         key = read_key(fd)
         while key:
             mat = read_mat(fd)
-            yield key, mat
+            yield str_or_bytes(key), mat
             key = read_key(fd)
     finally:
         if fd is not file_or_fd: fd.close()
@@ -430,7 +430,7 @@ def read_post_ark(file_or_fd):
         key = read_key(fd)
         while key:
             post = read_post(fd)
-            yield key, post
+            yield str_or_bytes(key), post
             key = read_key(fd)
     finally:
         if fd is not file_or_fd: fd.close()
@@ -498,7 +498,7 @@ def read_cntime_ark(file_or_fd):
         key = read_key(fd)
         while key:
             cntime = read_cntime(fd)
-            yield key, cntime
+            yield str_or_bytes(key), cntime
             key = read_key(fd)
     finally:
         if fd is not file_or_fd: fd.close()
