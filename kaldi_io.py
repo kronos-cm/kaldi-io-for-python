@@ -162,7 +162,7 @@ def write_vec_int(file_or_fd, v, key=IS_EMPTY):
     """
     fd = open_or_fd(file_or_fd, mode='wb')
     try:
-        if key != IS_EMPTY : fd.write(key+IS_SPACE) # ark-files have keys (utterance-id),
+        if str_or_bytes(key) != IS_EMPTY : fd.write(key+IS_SPACE) # ark-files have keys (utterance-id),
         fd.write(IS_BIN)  # we write binary!
         # dim,
         fd.write(IS_EOL)  # int32 type,
@@ -248,7 +248,7 @@ def write_vec_flt(file_or_fd, v, key=IS_EMPTY):
     """
     fd = open_or_fd(file_or_fd, mode='wb')
     try:
-        if key != IS_EMPTY: fd.write(key+IS_SPACE)  # ark-files have keys (utterance-id),
+        if str_or_bytes(key) != IS_EMPTY: fd.write(key+IS_SPACE)  # ark-files have keys (utterance-id),
         fd.write(IS_BIN)  # we write binary!
         # Data-type,
         if v.dtype == 'float32': fd.write(FLOAT_VEC)
@@ -383,7 +383,7 @@ def write_mat(file_or_fd, m, key=IS_EMPTY):
     """
     fd = open_or_fd(file_or_fd, mode='wb')
     try:
-        if key != IS_EMPTY: fd.write(key+IS_SPACE)  # ark-files have keys (utterance-id),
+        if str_or_bytes(key) != IS_EMPTY: fd.write(key+IS_SPACE)  # ark-files have keys (utterance-id),
         fd.write(IS_BIN)  # we write binary!
         # Data-type,
         if m.dtype == 'float32': fd.write(FLOAT_MAT)
