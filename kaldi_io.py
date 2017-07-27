@@ -18,8 +18,8 @@ else:
 
 #################################################
 
-IS_BIN = str_or_bytes('\x0b')
-IS_EOL = str_or_bytes('\x04')
+IS_BIN = str_or_bytes('\0b')
+IS_EOL = str_or_bytes('\04')
 IS_SPACE = str_or_bytes(' ')
 IS_EMPTY = str_or_bytes('')
 FLOAT_VEC = str_or_bytes('FV ')
@@ -372,6 +372,9 @@ def write_mat(file_or_fd, m, key=IS_EMPTY):
     file_or_fd: filename of opened file descriptor for writing,
     m: the matrix to be stored,
     key (optional): used for writing ark-file, the utterance-id gets written before the matrix.
+    
+    Return the position of the matrix in the data file to be able to write a .scp file 
+    together with the .ark file.
 
     Example of writing single matrix:
     kaldi_io.write_mat(filename, mat)
@@ -380,10 +383,22 @@ def write_mat(file_or_fd, m, key=IS_EMPTY):
     with open(ark_file,'w') as f:
      for key,mat in dict.iteritems():
        kaldi_io.write_mat(f, mat, key=key)
+       
+    Example of writing ark and scp file:
+    with open(ark_file, 'w') as fark:
+      with open(scp_file, 'w') as fscp:
+        for uttid in utteranceids:
+                mat = data[uttid])
+                offset = kaldi_io.write_mat(fark, mat, key=uttid)
+                scpline = "{} {}:{}\n".format(uttid, os.path.basename(ark_file),
+                                              offset)
+                scp.write(scpline)
+        
     """
     fd = open_or_fd(file_or_fd, mode='wb')
     try:
         if str_or_bytes(key) != IS_EMPTY: fd.write(key+IS_SPACE)  # ark-files have keys (utterance-id),
+        offset = fd.tell()
         fd.write(IS_BIN)  # we write binary!
         # Data-type,
         if m.dtype == 'float32': fd.write(FLOAT_MAT)
@@ -396,6 +411,7 @@ def write_mat(file_or_fd, m, key=IS_EMPTY):
         fd.write(struct.pack('I',m.shape[1]))  # cols
         # Data,
         m.tofile(fd, sep="")  # binary
+        return offset
     finally:
         if fd is not file_or_fd: fd.close()
 
