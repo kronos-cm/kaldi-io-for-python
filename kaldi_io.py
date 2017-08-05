@@ -215,7 +215,7 @@ def read_compress_mat(fd, compress_type):
         return global_min + global_range * 1.52590218966964e-05 * val
     mat = np.empty((rows, cols), dtype=float)
     # - cols because we firstly read the colheaders
-    if compress_type == 'CM ':
+    if compress_type == COMPRESSED + b' ':
         size = cols * (PER_COL_HEADER.itemsize + rows) - (PER_COL_HEADER.itemsize*cols)
     else:
         size = (2 * rows * cols) - (PER_COL_HEADER.itemsize*cols)
@@ -224,8 +224,8 @@ def read_compress_mat(fd, compress_type):
     col_headers = np.fromfile(fd, dtype=PER_COL_HEADER, count=cols)
     data = np.fromfile(fd, dtype='B', count=size)
     for i, col_head in enumerate(col_headers):
-        col_head = map(uinttofloat, col_head)
-        mat[:, i] = [uncompress(data[j], *col_head) for j in range(i*rows, (i*rows)+rows)]
+        col_head = list(map(uinttofloat, col_head))
+        mat[:, i] = [uncompress(data[j], *col_head) for j in range(i * rows, (i * rows) + rows)]
     return mat
 
 
